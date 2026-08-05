@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Bot {
+  id        String    @id @default(cuid())
+  name      String
+  username  String    @unique
+  createdAt DateTime  @default(now())
+  products  Product[]
+}
+
+model Product {
+  id           String          @id @default(cuid())
+  botId        String
+  externalKey  String
+  title        String
+  currentPrice Decimal         @db.Decimal(18, 2)
+  isActive     Boolean         @default(true)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  bot          Bot             @relation(fields: [botId], references: [id], onDelete: Cascade)
+  snapshots    PriceSnapshot[]
+
+  @@unique([botId, externalKey])
+  @@index([isActive])
+}
+
+model PriceSnapshot {
+  id         String   @id @default(cuid())
+  productId  String
+  price      Decimal  @db.Decimal(18, 2)
+  capturedAt DateTime @default(now())
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId, capturedAt])
+}

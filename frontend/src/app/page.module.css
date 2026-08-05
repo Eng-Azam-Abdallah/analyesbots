@@ -1,0 +1,42 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background:
+    radial-gradient(ellipse at 20% 10%, #dce9f5 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 90%, #e8f0e6 0%, transparent 45%),
+    #f7f8fa;
+}
+
+.main {
+  max-width: 36rem;
+  text-align: center;
+}
+
+.brand {
+  margin: 0 0 0.75rem;
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #0f2744;
+  font-family: var(--font-cairo), sans-serif;
+}
+
+.title {
+  margin: 0 0 0.75rem;
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #1a2f45;
+  font-family: var(--font-cairo), sans-serif;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #5a6b7d;
+  font-family: var(--font-cairo), sans-serif;
+}
