@@ -1,0 +1,7 @@
+.wrap {
+  gap: var(--s-15);
+}
+
+.icon {
+  color: var(--brand-muted);
+}

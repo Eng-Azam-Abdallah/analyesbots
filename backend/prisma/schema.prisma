@@ -7,36 +7,108 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum MarketChangeKind {
+  up
+  down
+  new
+  gone
+  stock_up
+  stock_down
+}
+
+enum SyncRunStatus {
+  ok
+  error
+}
+
 model Bot {
-  id        String    @id @default(cuid())
-  name      String
-  username  String    @unique
-  createdAt DateTime  @default(now())
-  products  Product[]
+  id               String            @id @default(cuid())
+  name             String
+  username         String            @unique
+  displayName      String?
+  sourceType       String            @default("reseller_api")
+  lastSyncedAt     DateTime?
+  createdAt        DateTime          @default(now())
+  products         Product[]
+  syncRuns         SyncRun[]
+  balanceSnapshots BalanceSnapshot[]
 }
 
 model Product {
-  id           String          @id @default(cuid())
-  botId        String
-  externalKey  String
-  title        String
-  currentPrice Decimal         @db.Decimal(18, 2)
-  isActive     Boolean         @default(true)
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
-  bot          Bot             @relation(fields: [botId], references: [id], onDelete: Cascade)
-  snapshots    PriceSnapshot[]
+  id                  String          @id @default(cuid())
+  botId               String
+  externalKey         String
+  title               String
+  description         String?
+  deliveryInstruction String?
+  currency            String          @default("USDT")
+  currentPrice        Decimal         @db.Decimal(18, 4)
+  wholesalePrice      Decimal         @db.Decimal(18, 4)
+  offerPrice          Decimal?        @db.Decimal(18, 4)
+  regularPrice        Decimal?        @db.Decimal(18, 4)
+  basePrice           Decimal?        @db.Decimal(18, 4)
+  stock               Int             @default(0)
+  isActive            Boolean         @default(true)
+  rawPayload          Json?
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  bot                 Bot             @relation(fields: [botId], references: [id], onDelete: Cascade)
+  snapshots           PriceSnapshot[]
+  changes             MarketChange[]
 
   @@unique([botId, externalKey])
   @@index([isActive])
+  @@index([botId])
 }
 
 model PriceSnapshot {
   id         String   @id @default(cuid())
   productId  String
-  price      Decimal  @db.Decimal(18, 2)
+  price      Decimal  @db.Decimal(18, 4)
+  stock      Int
   capturedAt DateTime @default(now())
   product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId, capturedAt])
+}
+
+model MarketChange {
+  id            String           @id @default(cuid())
+  productId     String
+  kind          MarketChangeKind
+  fromPrice     Decimal?         @db.Decimal(18, 4)
+  toPrice       Decimal?         @db.Decimal(18, 4)
+  changePercent Decimal?         @db.Decimal(10, 4)
+  fromStock     Int?
+  toStock       Int?
+  capturedAt    DateTime         @default(now())
+  product       Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([kind, capturedAt])
+  @@index([productId, capturedAt])
+}
+
+model BalanceSnapshot {
+  id         String   @id @default(cuid())
+  botId      String
+  balance    Decimal  @db.Decimal(18, 4)
+  currency   String   @default("USDT")
+  capturedAt DateTime @default(now())
+  bot        Bot      @relation(fields: [botId], references: [id], onDelete: Cascade)
+
+  @@index([botId, capturedAt])
+}
+
+model SyncRun {
+  id               String        @id @default(cuid())
+  botId            String
+  status           SyncRunStatus
+  productsSeen     Int           @default(0)
+  changesDetected  Int           @default(0)
+  errorMessage     String?
+  startedAt        DateTime      @default(now())
+  finishedAt       DateTime?
+  bot              Bot           @relation(fields: [botId], references: [id], onDelete: Cascade)
+
+  @@index([botId, startedAt])
 }

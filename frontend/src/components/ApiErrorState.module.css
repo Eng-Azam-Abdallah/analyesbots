@@ -1,0 +1,57 @@
+.box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-15);
+  padding: var(--s-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--brand-white);
+  box-shadow: var(--shadow-sm);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--text-card);
+  font-weight: 700;
+  color: var(--danger);
+}
+
+.message {
+  margin: 0;
+  color: var(--brand-ink);
+}
+
+.hint {
+  margin: 0;
+  color: var(--brand-muted);
+  font-size: var(--text-sm);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1);
+}
+
+.details {
+  margin-top: var(--s-1);
+  font-size: var(--text-sm);
+  color: var(--brand-muted);
+}
+
+.details summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.details pre {
+  margin: var(--s-1) 0 0;
+  padding: var(--s-2);
+  border-radius: var(--radius-sm);
+  background: var(--surface-muted);
+  overflow: auto;
+  white-space: pre-wrap;
+  direction: ltr;
+  text-align: start;
+  font-size: var(--text-xs);
+}

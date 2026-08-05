@@ -42,6 +42,29 @@ npm run start:dev
 API يعمل على: `http://localhost:3001`  
 فحص الصحة: `GET http://localhost:3001/health`
 
+ضع في `backend/.env`:
+- `RESELLER_API_URL` / `RESELLER_API_KEY` (Rexovaan)
+- `CANBOSO_API_URL` / `CANBOSO_API_KEY` (Canboso)
+- `ZOOMSTOORE_API_URL` / `ZOOMSTOORE_API_KEY` (Zoom Store)
+- `TECHNYSOFT_API_URL` / `TECHNYSOFT_API_KEY` (MKE / @mkeshopbot)
+- `TELEGRAM_BUYER_API_URL` / `TELEGRAM_BUYER_API_KEY` (Buyer API)
+- `HYPERVIN_API_URL` / `HYPERVIN_API_KEY` (HyleHub / HyperVin)
+- `SHOPDIGITAL_API_URL` / `SHOPDIGITAL_API_KEY` (KOKORO SHOP)
+- `TELESHOPBOT_API_URL` / `TELESHOPBOT_API_KEY` (TeleShopBot Gemini)
+- أسماء البوتات: `RESELLER_BOT_USERNAME` / `CANBOSO_BOT_USERNAME` / `ZOOMSTOORE_BOT_USERNAME` / `TECHNYSOFT_BOT_USERNAME` / `TELEGRAM_BUYER_BOT_USERNAME` / `HYPERVIN_BOT_USERNAME` / `SHOPDIGITAL_BOT_USERNAME` / `TELESHOPBOT_BOT_USERNAME`
+
+Endpoints مفيدة:
+- `GET /products` — قائمة المنتجات (سعر + كمية)
+- `GET /products/:id` — تفاصيل المنتج
+- `GET /products/:id/history` — سجل السعر/الكمية
+- `GET /changes` — سجل التغيّرات
+- `GET /market/summary` — ملخص طلع/نزل/جديد
+- `GET /bots` — مصادر البيانات
+- `GET /sync/runs` — نتائج المزامنة
+- `POST /sync/run` — مزامنة يدوية
+
+المزامنة تعمل تلقائيًا كل دقيقة عند تشغيل الـ Backend.
+
 ### 3) Frontend
 
 ```bash
@@ -66,5 +89,6 @@ analyes/
 
 ## ملاحظات
 
-- المرحلة الحالية: إعداد المشروع فقط (بدون تحليل كامل أو ربط تليجرام).
+- المصادر الحالية: `@RexovaanShoppieBot` و `ZoomStoore` و `@mkeshopbot` و `TelegramBuyer` و `KokoroShop` و `TeleShopBot` يعملون؛ و `Canboso` / `HyleHub` (ربط جاهز / شبكة أو DNS غير متاح من الجهاز).
+- الواجهة الأمامية تعرض البيانات الحية من NestJS API.
 - التفاصيل في [`REQUIREMENTS.md`](REQUIREMENTS.md).
