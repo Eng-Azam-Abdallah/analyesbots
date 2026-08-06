@@ -2,6 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MarketChangeKind, Prisma, SyncRunStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { familyFieldsFor } from '../market-intel/family-classifier';
+import { recordStockDeltaSale } from '../market-intel/sales-proxy';
 import { ZoomStooreApiClient } from './zoomstoore-api.client';
 import type { ZoomStooreProductDto } from './zoomstoore.types';
 
@@ -176,6 +178,7 @@ export class ZoomStooreSyncService {
           botId,
           externalKey,
           title: remote.name,
+          ...familyFieldsFor(String(remote.name ?? ''), (remote as { description?: string | null }).description ?? null),
           currency,
           currentPrice: new Prisma.Decimal(price),
           wholesalePrice: new Prisma.Decimal(price),
@@ -218,6 +221,7 @@ export class ZoomStooreSyncService {
       where: { id: existing.id },
       data: {
         title: remote.name,
+        ...familyFieldsFor(String(remote.name ?? ''), (remote as { description?: string | null }).description ?? null),
         currency,
         currentPrice: new Prisma.Decimal(price),
         wholesalePrice: new Prisma.Decimal(price),
@@ -282,6 +286,16 @@ export class ZoomStooreSyncService {
       });
       changes += 1;
     }
+      if (stock < previousStock) {
+        await recordStockDeltaSale(this.prisma, {
+          productId: existing.id,
+          botId,
+          fromStock: previousStock,
+          toStock: stock,
+          unitPrice: Number(price),
+        });
+      }
+
 
     return { changes };
   }

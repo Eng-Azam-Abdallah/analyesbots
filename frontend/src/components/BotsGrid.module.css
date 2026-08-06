@@ -72,6 +72,30 @@
   gap: var(--s-1);
 }
 
+.signal {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-label);
+  font-weight: 700;
+}
+
+.signal_good {
+  background: color-mix(in srgb, var(--success, #16a34a) 16%, transparent);
+  color: var(--success, #15803d);
+}
+
+.signal_weak {
+  background: color-mix(in srgb, var(--warning, #ca8a04) 16%, transparent);
+  color: var(--warning, #a16207);
+}
+
+.signal_poor {
+  background: color-mix(in srgb, var(--danger, #dc2626) 12%, transparent);
+  color: var(--danger, #b91c1c);
+}
+
 .errorBox {
   padding: var(--s-15);
   border-radius: var(--radius-sm);

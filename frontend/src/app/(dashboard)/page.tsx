@@ -14,21 +14,26 @@ import { PageHeader } from "@/components/PageHeader";
 import { StatCards } from "@/components/StatCards";
 import {
   ApiError,
+  getAnalyticsBotsDaily,
   getBots,
+  getCategories,
   getChanges,
   getMarketSummary,
 } from "@/lib/api";
-import { formatRelativeTime, minutesSince } from "@/lib/format";
+import { formatPrice, formatRelativeTime, formatStock, minutesSince } from "@/lib/format";
 import styles from "./page.module.css";
 
 export default async function DashboardPage() {
   try {
-    const [summary, recent, bots, chartChanges] = await Promise.all([
-      getMarketSummary(24),
-      getChanges({ limit: 8 }),
-      getBots(),
-      getChanges({ limit: 200 }),
-    ]);
+    const [summary, recent, bots, chartChanges, categories, botsDaily] =
+      await Promise.all([
+        getMarketSummary(24),
+        getChanges({ limit: 8 }),
+        getBots(),
+        getChanges({ limit: 200 }),
+        getCategories(),
+        getAnalyticsBotsDaily().catch(() => null),
+      ]);
 
     const connected = bots.filter((bot) => {
       const mins = minutesSince(bot.lastSyncedAt);
@@ -120,6 +125,40 @@ export default async function DashboardPage() {
             },
           ]}
         />
+
+        <section className={styles.section} aria-labelledby="intel-heading">
+          <div className={styles.sectionHead}>
+            <h2 id="intel-heading" className={styles.sectionTitle}>
+              ذكاء السوق اليوم
+            </h2>
+            <Link href="/analytics" className={styles.sectionLink}>
+              التحليل الكامل
+            </Link>
+          </div>
+          <div className={styles.intelGrid}>
+            <div className={styles.intelCard}>
+              <span className={styles.intelLabel}>أكثر بوت نشاطًا (مستنتج)</span>
+              <strong>
+                {botsDaily?.data?.[0]
+                  ? `${botsDaily.data[0].displayName || botsDaily.data[0].username} · ${formatPrice(botsDaily.data[0].revenueProxy, "USDT")}`
+                  : "لا حركة بيع مستنتجة بعد"}
+              </strong>
+            </div>
+            <div className={styles.intelCard}>
+              <span className={styles.intelLabel}>أكثر فئة توفرًا</span>
+              <strong>
+                {categories.data[0]
+                  ? `${categories.data[0].label} · ${formatStock(categories.data[0].totalStock)}`
+                  : "—"}
+              </strong>
+              {categories.data[0] ? (
+                <Link href={`/categories/${categories.data[0].slug}`}>
+                  عرض الفئة
+                </Link>
+              ) : null}
+            </div>
+          </div>
+        </section>
 
         <section className={styles.section} aria-labelledby="activity-heading">
           <div className={styles.sectionHead}>

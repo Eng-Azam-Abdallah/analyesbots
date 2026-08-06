@@ -25,6 +25,10 @@ export type ApiProductListItem = {
   wholesalePrice: number;
   stock: number;
   isActive: boolean;
+  familySlug?: string | null;
+  familyLabel?: string | null;
+  durationTag?: string | null;
+  soldTotal?: number | null;
   bot: {
     id: string;
     username: string;
@@ -50,6 +54,10 @@ export type ApiProductDetail = {
   };
   stock: number;
   isActive: boolean;
+  familySlug?: string | null;
+  familyLabel?: string | null;
+  durationTag?: string | null;
+  soldTotal?: number | null;
   bot: {
     id: string;
     username: string;
@@ -59,6 +67,97 @@ export type ApiProductDetail = {
   };
   createdAt: string;
   updatedAt: string;
+};
+
+export type ApiFamilySummary = {
+  slug: string;
+  label: string;
+  offerCount: number;
+  totalStock: number;
+  coverage: number;
+  minPrice: number | null;
+  medianPrice: number | null;
+  maxPrice: number | null;
+};
+
+export type ApiFamilyDetail = ApiFamilySummary & {
+  products: Array<{
+    id: string;
+    title: string;
+    price: number;
+    stock: number;
+    currency: string;
+    durationTag: string | null;
+    familyConfidence: string | null;
+    bot: {
+      id: string;
+      username: string;
+      displayName: string | null;
+      name: string;
+    };
+  }>;
+};
+
+export type StockSignalQuality = "good" | "weak" | "poor";
+
+export type ApiBotDailyStat = {
+  botId: string;
+  username: string;
+  displayName: string | null;
+  name: string | null;
+  unitsProxy: number;
+  revenueProxy: number;
+  stockDownCount: number;
+  activeSkus: number;
+  declaredUnits: number;
+  declaredRevenue: number;
+  stockSignalQuality: StockSignalQuality;
+  stockSignalRatio: number;
+};
+
+export type ApiAnalyticsBotsDaily = {
+  metricType: string;
+  disclaimer: string;
+  day: string;
+  start: string;
+  end: string;
+  data: ApiBotDailyStat[];
+};
+
+export type ApiAnalyticsRanking = {
+  metricType: string;
+  disclaimer: string;
+  range: string;
+  start: string;
+  end: string;
+  data: Array<{
+    botId: string;
+    username: string;
+    displayName: string | null;
+    name: string | null;
+    unitsProxy: number;
+    revenueProxy: number;
+    stockDownCount: number;
+    activeSkus: number;
+  }>;
+};
+
+export type ApiAnalyticsProductsTop = {
+  metricType: string;
+  disclaimer: string;
+  range: string;
+  groupBy: string;
+  start: string;
+  end: string;
+  data: Array<{
+    familySlug?: string;
+    familyLabel?: string;
+    productId?: string;
+    title?: string;
+    botUsername?: string;
+    unitsProxy: number;
+    revenueProxy: number;
+  }>;
 };
 
 export type ApiProductHistory = {

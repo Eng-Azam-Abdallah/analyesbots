@@ -11,9 +11,24 @@ import { EmptyState } from "./EmptyState";
 import { StatusBadge } from "./StatusBadge";
 import styles from "./BotsGrid.module.css";
 
+type DailyBotStat = {
+  unitsProxy: number;
+  revenueProxy: number;
+  declaredUnits: number;
+  stockSignalQuality?: "good" | "weak" | "poor";
+  stockSignalRatio?: number;
+};
+
 type BotsGridProps = {
   bots: ApiBot[];
   runs?: ApiSyncRun[];
+  dailyByBotId?: Record<string, DailyBotStat>;
+};
+
+const SIGNAL_LABEL: Record<"good" | "weak" | "poor", string> = {
+  good: "مؤشر مخزون جيد",
+  weak: "مؤشر مخزون متوسط",
+  poor: "مؤشر مخزون ضعيف",
 };
 
 type SourceState = "active" | "paused" | "error" | "inactive";
@@ -38,7 +53,7 @@ function resolveState(
   return { kind: "paused", label: "بيانات قديمة" };
 }
 
-export function BotsGrid({ bots, runs = [] }: BotsGridProps) {
+export function BotsGrid({ bots, runs = [], dailyByBotId = {} }: BotsGridProps) {
   if (bots.length === 0) {
     return (
       <EmptyState
@@ -64,6 +79,7 @@ export function BotsGrid({ bots, runs = [] }: BotsGridProps) {
         {bots.map((bot) => {
           const lastRun = latestByBot.get(bot.id);
           const state = resolveState(bot, lastRun);
+          const daily = dailyByBotId[bot.id];
 
           return (
             <li key={bot.id} className={styles.row}>
@@ -78,6 +94,20 @@ export function BotsGrid({ bots, runs = [] }: BotsGridProps) {
                 <div>
                   <span className={styles.statLabel}>المنتجات</span>
                   <div className={styles.statValue}>{bot.productCount}</div>
+                </div>
+                <div>
+                  <span className={styles.statLabel}>نشاط اليوم (مستنتج)</span>
+                  <div className={styles.statValue}>
+                    {daily
+                      ? `${daily.unitsProxy} · ${daily.revenueProxy.toFixed(2)}`
+                      : "0"}
+                  </div>
+                </div>
+                <div>
+                  <span className={styles.statLabel}>معلن اليوم</span>
+                  <div className={styles.statValue}>
+                    {daily?.declaredUnits ?? 0}
+                  </div>
                 </div>
                 <div>
                   <span className={styles.statLabel}>آخر مزامنة ناجحة</span>
@@ -127,6 +157,14 @@ export function BotsGrid({ bots, runs = [] }: BotsGridProps) {
                 >
                   {state.label}
                 </span>
+                {daily?.stockSignalQuality ? (
+                  <span
+                    className={`${styles.signal} ${styles[`signal_${daily.stockSignalQuality}`]}`}
+                    title={`${Math.round((daily.stockSignalRatio ?? 0) * 100)}% منتجات بمخزون رقمي`}
+                  >
+                    {SIGNAL_LABEL[daily.stockSignalQuality]}
+                  </span>
+                ) : null}
               </div>
 
               {lastRun?.status === "error" && lastRun.errorMessage ? (
@@ -147,9 +185,12 @@ function sanitizeError(message: string): string {
   return message
     .replace(/mkeapi_[a-z0-9]+/gi, "[redacted]")
     .replace(/rsk_live_[a-z0-9]+/gi, "[redacted]")
+    .replace(/vex_sk_[a-z0-9]+/gi, "[redacted]")
+    .replace(/emstore_[a-z0-9]+/gi, "[redacted]")
     .replace(/mk_[a-z0-9_]+/gi, "[redacted]")
     .replace(/tgb_[a-z0-9]+/gi, "[redacted]")
     .replace(/qamify_[a-z0-9]+/gi, "[redacted]")
+    .replace(/isk_live_[a-zA-Z0-9_]+/gi, "[redacted]")
     .replace(/tsb_live_[a-zA-Z0-9_]+/gi, "[redacted]")
     .replace(/Bearer\s+[^\s]+/gi, "Bearer [redacted]")
     .slice(0, 500);

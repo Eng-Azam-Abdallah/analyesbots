@@ -2,6 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MarketChangeKind, Prisma, SyncRunStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { familyFieldsFor } from '../market-intel/family-classifier';
+import { recordStockDeltaSale } from '../market-intel/sales-proxy';
 import { TechnySoftApiClient } from './technysoft-api.client';
 import type { TechnySoftProductDto } from './technysoft.types';
 
@@ -195,6 +197,7 @@ export class TechnySoftSyncService {
           botId,
           externalKey,
           title,
+          ...familyFieldsFor(title, description),
           description,
           deliveryInstruction,
           currency: 'USD',
@@ -237,6 +240,7 @@ export class TechnySoftSyncService {
       where: { id: existing.id },
       data: {
         title,
+        ...familyFieldsFor(title, description),
         description,
         deliveryInstruction,
         currency: 'USD',
@@ -301,6 +305,16 @@ export class TechnySoftSyncService {
       });
       changes += 1;
     }
+      if (stock < previousStock) {
+        await recordStockDeltaSale(this.prisma, {
+          productId: existing.id,
+          botId,
+          fromStock: previousStock,
+          toStock: stock,
+          unitPrice: Number(price),
+        });
+      }
+
 
     return { changes };
   }

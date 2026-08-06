@@ -2,6 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MarketChangeKind, Prisma, SyncRunStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { familyFieldsFor } from '../market-intel/family-classifier';
+import { recordStockDeltaSale } from '../market-intel/sales-proxy';
 import { CanbosoApiClient } from './canboso-api.client';
 import type {
   CanbosoBalanceResponse,
@@ -249,6 +251,7 @@ export class CanbosoSyncService {
           botId,
           externalKey: remote.externalKey,
           title: remote.title,
+          ...familyFieldsFor(String(remote.title ?? ''), remote.description ?? null),
           description: remote.description,
           currency: remote.currency,
           currentPrice: new Prisma.Decimal(remote.price),
@@ -290,6 +293,7 @@ export class CanbosoSyncService {
       where: { id: existing.id },
       data: {
         title: remote.title,
+        ...familyFieldsFor(String(remote.title ?? ''), remote.description ?? null),
         description: remote.description,
         currency: remote.currency,
         currentPrice: new Prisma.Decimal(remote.price),
@@ -352,6 +356,15 @@ export class CanbosoSyncService {
         },
       });
       changes += 1;
+    }
+    if (stockChanged && remote.stock < previousStock) {
+      await recordStockDeltaSale(this.prisma, {
+        productId: existing.id,
+        botId,
+        fromStock: previousStock,
+        toStock: remote.stock,
+        unitPrice: Number(remote.price),
+      });
     }
 
     return { changes };

@@ -1,6 +1,11 @@
 import type {
+  ApiAnalyticsBotsDaily,
+  ApiAnalyticsProductsTop,
+  ApiAnalyticsRanking,
   ApiBot,
   ApiChange,
+  ApiFamilyDetail,
+  ApiFamilySummary,
   ApiMarketSummary,
   ApiProductDetail,
   ApiProductHistory,
@@ -56,11 +61,16 @@ export function getMarketSummary(hours = 24) {
   return apiFetch<ApiMarketSummary>(`/market/summary?hours=${hours}`);
 }
 
-export function getProducts(params?: { active?: boolean; botId?: string }) {
+export function getProducts(params?: {
+  active?: boolean;
+  botId?: string;
+  family?: string;
+}) {
   const search = new URLSearchParams();
   if (params?.active === true) search.set("active", "true");
   if (params?.active === false) search.set("active", "false");
   if (params?.botId) search.set("botId", params.botId);
+  if (params?.family) search.set("family", params.family);
   const query = search.toString();
   return apiFetch<ApiProductListItem[]>(
     `/products${query ? `?${query}` : ""}`,
@@ -92,4 +102,38 @@ export function getBots() {
 
 export function getSyncRuns() {
   return apiFetch<ApiSyncRun[]>("/sync/runs");
+}
+
+export function getCategories() {
+  return apiFetch<{ count: number; data: ApiFamilySummary[] }>("/categories");
+}
+
+export function getCategory(slug: string) {
+  return apiFetch<ApiFamilyDetail>(`/categories/${encodeURIComponent(slug)}`);
+}
+
+export function getAnalyticsBotsDaily(day?: string) {
+  const q = day ? `?day=${encodeURIComponent(day)}` : "";
+  return apiFetch<ApiAnalyticsBotsDaily>(`/analytics/bots/daily${q}`);
+}
+
+export function getAnalyticsBotsRanking(range: "1d" | "7d" = "1d") {
+  return apiFetch<ApiAnalyticsRanking>(`/analytics/bots/ranking?range=${range}`);
+}
+
+export function getAnalyticsProductsTop(
+  range: "1d" | "7d" = "1d",
+  groupBy: "family" | "product" = "family",
+) {
+  return apiFetch<ApiAnalyticsProductsTop>(
+    `/analytics/products/top?range=${range}&groupBy=${groupBy}`,
+  );
+}
+
+export function getAnalyticsAvailability() {
+  return apiFetch<{
+    metricType: string;
+    disclaimer: string;
+    data: ApiFamilySummary[];
+  }>("/analytics/availability");
 }

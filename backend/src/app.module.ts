@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
+import { AnalyticsModule } from './analytics/analytics.module';
 import { BotsModule } from './bots/bots.module';
+import { CategoriesModule } from './categories/categories.module';
 import { ChangesModule } from './changes/changes.module';
 import { HealthModule } from './health/health.module';
 import { MarketModule } from './market/market.module';
@@ -22,6 +24,8 @@ import { SyncModule } from './sync/sync.module';
     ChangesModule,
     MarketModule,
     BotsModule,
+    CategoriesModule,
+    AnalyticsModule,
   ],
 })
 export class AppModule {}

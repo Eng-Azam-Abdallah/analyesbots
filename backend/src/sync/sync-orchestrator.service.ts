@@ -1,14 +1,18 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
+import { AiMarketSyncService } from '../aimarket/aimarket-sync.service';
 import { CanbosoSyncService } from '../canboso/canboso-sync.service';
+import { EmStoreSyncService } from '../emstore/emstore-sync.service';
 import { HyperVinSyncService } from '../hypervin/hypervin-sync.service';
+import { InsightXSyncService } from '../insightx/insightx-sync.service';
 import { QamifySyncService } from '../qamify/qamify-sync.service';
 import { ResellerSyncService } from '../reseller/reseller-sync.service';
 import { ShopDigitalSyncService } from '../shopdigital/shopdigital-sync.service';
 import { TechnySoftSyncService } from '../technysoft/technysoft-sync.service';
 import { TeleShopBotSyncService } from '../teleshopbot/teleshopbot-sync.service';
 import { TelegramBuyerSyncService } from '../telegrambuyer/telegrambuyer-sync.service';
+import { VexoranSyncService } from '../vexoran/vexoran-sync.service';
 import { ZoomStooreSyncService } from '../zoomstoore/zoomstoore-sync.service';
 
 @Injectable()
@@ -26,6 +30,10 @@ export class SyncOrchestrator implements OnModuleInit {
     private readonly shopdigital: ShopDigitalSyncService,
     private readonly teleshopbot: TeleShopBotSyncService,
     private readonly qamify: QamifySyncService,
+    private readonly insightx: InsightXSyncService,
+    private readonly aimarket: AiMarketSyncService,
+    private readonly vexoran: VexoranSyncService,
+    private readonly emstore: EmStoreSyncService,
     private readonly config: ConfigService,
   ) {}
 
@@ -69,6 +77,10 @@ export class SyncOrchestrator implements OnModuleInit {
         () => this.teleshopbot.runSync(),
       ],
       ['qamify', 'QAMIFY_API_KEY', () => this.qamify.runSync()],
+      ['insightx', 'INSIGHTX_API_KEY', () => this.insightx.runSync()],
+      ['aimarket', 'AIMARKET_API_KEY', () => this.aimarket.runSync()],
+      ['vexoran', 'VEXORAN_API_KEY', () => this.vexoran.runSync()],
+      ['emstore', 'EMSTORE_API_KEY', () => this.emstore.runSync()],
     ];
 
     try {

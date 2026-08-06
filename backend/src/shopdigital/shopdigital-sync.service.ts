@@ -2,6 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MarketChangeKind, Prisma, SyncRunStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { familyFieldsFor } from '../market-intel/family-classifier';
+import { recordStockDeltaSale } from '../market-intel/sales-proxy';
 import { ShopDigitalApiClient } from './shopdigital-api.client';
 import type { ShopDigitalProductDto } from './shopdigital.types';
 
@@ -194,6 +196,7 @@ export class ShopDigitalSyncService {
           botId,
           externalKey,
           title,
+          ...familyFieldsFor(title, description),
           description,
           currency: 'USDT',
           currentPrice: new Prisma.Decimal(safePrice),
@@ -235,6 +238,7 @@ export class ShopDigitalSyncService {
       where: { id: existing.id },
       data: {
         title,
+        ...familyFieldsFor(title, description),
         description,
         currency: 'USDT',
         currentPrice: new Prisma.Decimal(safePrice),
@@ -298,6 +302,16 @@ export class ShopDigitalSyncService {
       });
       changes += 1;
     }
+      if (stock < previousStock) {
+        await recordStockDeltaSale(this.prisma, {
+          productId: existing.id,
+          botId,
+          fromStock: previousStock,
+          toStock: stock,
+          unitPrice: Number(price),
+        });
+      }
+
 
     return { changes };
   }

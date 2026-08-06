@@ -172,6 +172,14 @@ export function sourceLabel(sourceType: string): string {
       return "TeleShopBot";
     case "qamify_api":
       return "Qamify";
+    case "insightx_api":
+      return "InsightX Store";
+    case "aimarket_api":
+      return "Ai-Market";
+    case "vexoran_api":
+      return "Vexoran Shoppie";
+    case "emstore_api":
+      return "EM Store helper";
     default:
       return sourceType;
   }

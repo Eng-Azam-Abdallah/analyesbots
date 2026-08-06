@@ -27,6 +27,34 @@
   color: var(--primary-hover);
 }
 
+.intelGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--s-2);
+}
+
+.intelCard {
+  padding: var(--s-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--brand-white);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.intelLabel {
+  font-size: var(--text-label);
+  color: var(--brand-muted);
+  font-weight: 600;
+}
+
+@media (min-width: 768px) {
+  .intelGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 .panel {
   border: 1px solid var(--border);
   border-radius: var(--radius);

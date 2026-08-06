@@ -2,6 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MarketChangeKind, Prisma, SyncRunStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { familyFieldsFor } from '../market-intel/family-classifier';
+import { recordStockDeltaSale } from '../market-intel/sales-proxy';
 import { TeleShopBotApiClient } from './teleshopbot-api.client';
 import type { TeleShopBotProductDto } from './teleshopbot.types';
 
@@ -203,6 +205,7 @@ export class TeleShopBotSyncService {
           botId,
           externalKey,
           title,
+          ...familyFieldsFor(title, description),
           description,
           currency: 'USD',
           currentPrice: new Prisma.Decimal(safePrice),
@@ -244,6 +247,7 @@ export class TeleShopBotSyncService {
       where: { id: existing.id },
       data: {
         title,
+        ...familyFieldsFor(title, description),
         description,
         currency: 'USD',
         currentPrice: new Prisma.Decimal(safePrice),
@@ -307,6 +311,16 @@ export class TeleShopBotSyncService {
       });
       changes += 1;
     }
+      if (stock < previousStock) {
+        await recordStockDeltaSale(this.prisma, {
+          productId: existing.id,
+          botId,
+          fromStock: previousStock,
+          toStock: stock,
+          unitPrice: Number(price),
+        });
+      }
+
 
     return { changes };
   }

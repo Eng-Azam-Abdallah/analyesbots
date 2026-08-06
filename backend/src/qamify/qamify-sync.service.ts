@@ -2,6 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MarketChangeKind, Prisma, SyncRunStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { familyFieldsFor } from '../market-intel/family-classifier';
+import { recordDeclaredDeltaSale, recordStockDeltaSale } from '../market-intel/sales-proxy';
 import { QamifyApiClient } from './qamify-api.client';
 import type { QamifyProductDto } from './qamify.types';
 
@@ -189,6 +191,10 @@ export class QamifySyncService {
 
     const payload: Prisma.InputJsonValue =
       remote as unknown as Prisma.InputJsonValue;
+    const soldTotal =
+      remote.sold_total === null || remote.sold_total === undefined
+        ? null
+        : Math.max(0, Math.floor(Number(remote.sold_total)));
 
     if (!existing) {
       const created = await this.prisma.product.create({
@@ -196,11 +202,13 @@ export class QamifySyncService {
           botId,
           externalKey,
           title: remote.name,
+          ...familyFieldsFor(String(remote.name ?? ''), remote.description ?? null),
           description: remote.description ?? null,
           currency,
           currentPrice: new Prisma.Decimal(price),
           wholesalePrice: new Prisma.Decimal(price),
           stock,
+          soldTotal,
           isActive: true,
           rawPayload: payload,
         },
@@ -229,6 +237,7 @@ export class QamifySyncService {
     let changes = 0;
     const previousPrice = Number(existing.currentPrice);
     const previousStock = existing.stock;
+    const previousSold = existing.soldTotal;
     const priceChanged = previousPrice !== price;
     const stockChanged = previousStock !== stock;
 
@@ -236,15 +245,35 @@ export class QamifySyncService {
       where: { id: existing.id },
       data: {
         title: remote.name,
+        ...familyFieldsFor(String(remote.name ?? ''), remote.description ?? null),
         description: remote.description ?? null,
         currency,
         currentPrice: new Prisma.Decimal(price),
         wholesalePrice: new Prisma.Decimal(price),
         stock,
+        soldTotal,
         isActive: true,
         rawPayload: payload,
       },
     });
+
+    if (
+      soldTotal !== null &&
+      previousSold !== null &&
+      soldTotal > previousSold
+    ) {
+      await recordDeclaredDeltaSale(this.prisma, {
+        productId: existing.id,
+        botId,
+        qty: soldTotal - previousSold,
+        unitPrice: price,
+        fromSold: previousSold,
+        toSold: soldTotal,
+      });
+      changes += 1;
+    } else if (soldTotal !== null && previousSold === null) {
+      // first time we see declared total — store only, no delta event
+    }
 
     if (priceChanged || stockChanged) {
       await this.prisma.priceSnapshot.create({
@@ -298,6 +327,16 @@ export class QamifySyncService {
       });
       changes += 1;
     }
+      if (stock < previousStock) {
+        await recordStockDeltaSale(this.prisma, {
+          productId: existing.id,
+          botId,
+          fromStock: previousStock,
+          toStock: stock,
+          unitPrice: Number(price),
+        });
+      }
+
 
     return { changes };
   }

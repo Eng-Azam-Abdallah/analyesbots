@@ -9,6 +9,8 @@ import {
   Menu,
   Package,
   Radio,
+  Tags,
+  BarChart3,
   X,
 } from "lucide-react";
 import styles from "./AppShell.module.css";
@@ -16,6 +18,8 @@ import styles from "./AppShell.module.css";
 const links = [
   { href: "/", label: "لوحة السوق", icon: LayoutDashboard },
   { href: "/products", label: "المنتجات", icon: Package },
+  { href: "/categories", label: "الفئات", icon: Tags },
+  { href: "/analytics", label: "التحليل", icon: BarChart3 },
   { href: "/changes", label: "التغيّرات", icon: Activity },
   { href: "/bots", label: "المصادر", icon: Radio },
 ] as const;
@@ -35,6 +39,9 @@ type AppShellProps = {
 function pageTitle(pathname: string): string {
   if (pathname.startsWith("/products/")) return "تفاصيل المنتج";
   if (pathname.startsWith("/products")) return "المنتجات";
+  if (pathname.startsWith("/categories/")) return "تفاصيل الفئة";
+  if (pathname.startsWith("/categories")) return "الفئات";
+  if (pathname.startsWith("/analytics")) return "التحليل";
   if (pathname.startsWith("/changes")) return "التغيّرات";
   if (pathname.startsWith("/bots")) return "المصادر";
   return "لوحة السوق";

@@ -17,14 +17,20 @@ import styles from "./ProductsTable.module.css";
 type ProductsTableProps = {
   products: ApiProductListItem[];
   bots: ApiBot[];
+  families?: Array<{ slug: string; label: string }>;
 };
 
 type SortKey = "name" | "price" | "stock" | "source" | "updated";
 type Availability = "all" | "active" | "inactive";
 
-export function ProductsTable({ products, bots }: ProductsTableProps) {
+export function ProductsTable({
+  products,
+  bots,
+  families = [],
+}: ProductsTableProps) {
   const [query, setQuery] = useState("");
   const [botId, setBotId] = useState("all");
+  const [family, setFamily] = useState("all");
   const [availability, setAvailability] = useState<Availability>("all");
   const [sort, setSort] = useState<SortKey>("updated");
 
@@ -32,6 +38,8 @@ export function ProductsTable({ products, bots }: ProductsTableProps) {
     const q = query.trim().toLowerCase();
     const list = products.filter((product) => {
       const matchesBot = botId === "all" || product.bot.id === botId;
+      const matchesFamily =
+        family === "all" || product.familySlug === family;
       const matchesAvailability =
         availability === "all" ||
         (availability === "active" ? product.isActive : !product.isActive);
@@ -41,8 +49,11 @@ export function ProductsTable({ products, bots }: ProductsTableProps) {
         product.id.toLowerCase().includes(q) ||
         product.bot.name.toLowerCase().includes(q) ||
         product.bot.username.toLowerCase().includes(q) ||
-        (product.bot.displayName?.toLowerCase().includes(q) ?? false);
-      return matchesBot && matchesAvailability && matchesQuery;
+        (product.bot.displayName?.toLowerCase().includes(q) ?? false) ||
+        (product.familyLabel?.toLowerCase().includes(q) ?? false);
+      return (
+        matchesBot && matchesFamily && matchesAvailability && matchesQuery
+      );
     });
 
     const sorted = [...list];
@@ -64,14 +75,18 @@ export function ProductsTable({ products, bots }: ProductsTableProps) {
       }
     });
     return sorted;
-  }, [products, botId, query, availability, sort]);
+  }, [products, botId, family, query, availability, sort]);
 
   const isFiltered =
-    query.trim() !== "" || botId !== "all" || availability !== "all";
+    query.trim() !== "" ||
+    botId !== "all" ||
+    family !== "all" ||
+    availability !== "all";
 
   function resetFilters() {
     setQuery("");
     setBotId("all");
+    setFamily("all");
     setAvailability("all");
     setSort("updated");
   }
@@ -109,6 +124,20 @@ export function ProductsTable({ products, bots }: ProductsTableProps) {
               {bots.map((bot) => (
                 <option key={bot.id} value={bot.id}>
                   {botLabel(bot)}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="uiField">
+            <span>الفئة</span>
+            <select
+              value={family}
+              onChange={(event) => setFamily(event.target.value)}
+            >
+              <option value="all">كل الفئات</option>
+              {families.map((item) => (
+                <option key={item.slug} value={item.slug}>
+                  {item.label}
                 </option>
               ))}
             </select>

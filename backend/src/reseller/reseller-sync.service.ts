@@ -2,6 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MarketChangeKind, Prisma, SyncRunStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { familyFieldsFor } from '../market-intel/family-classifier';
+import { recordStockDeltaSale } from '../market-intel/sales-proxy';
 import { ResellerApiClient } from './reseller-api.client';
 import type { ResellerProductDto } from './reseller.types';
 
@@ -193,6 +195,7 @@ export class ResellerSyncService {
           botId,
           externalKey: remote.id,
           title: remote.name,
+          ...familyFieldsFor(String(remote.name ?? ''), (remote as { description?: string | null }).description ?? null),
           description: remote.description ?? null,
           deliveryInstruction: remote.delivery_instruction ?? null,
           currency,
@@ -239,6 +242,7 @@ export class ResellerSyncService {
       where: { id: existing.id },
       data: {
         title: remote.name,
+        ...familyFieldsFor(String(remote.name ?? ''), (remote as { description?: string | null }).description ?? null),
         description: remote.description ?? null,
         deliveryInstruction: remote.delivery_instruction ?? null,
         currency,
@@ -306,6 +310,16 @@ export class ResellerSyncService {
       });
       changes += 1;
     }
+      if (stock < previousStock) {
+        await recordStockDeltaSale(this.prisma, {
+          productId: existing.id,
+          botId,
+          fromStock: previousStock,
+          toStock: stock,
+          unitPrice: Number(wholesale),
+        });
+      }
+
 
     return { changes };
   }

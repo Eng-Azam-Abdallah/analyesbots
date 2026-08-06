@@ -10,11 +10,13 @@ export class ProductsController {
   async list(
     @Query('botId') botId?: string,
     @Query('active') active?: string,
+    @Query('family') family?: string,
   ) {
     const where: Prisma.ProductWhereInput = {};
     if (botId) where.botId = botId;
     if (active === 'true') where.isActive = true;
     if (active === 'false') where.isActive = false;
+    if (family) where.familySlug = family;
 
     const products = await this.prisma.product.findMany({
       where,
@@ -93,6 +95,10 @@ export class ProductsController {
       },
       stock: product.stock,
       isActive: product.isActive,
+      familySlug: product.familySlug,
+      familyLabel: product.familyLabel,
+      durationTag: product.durationTag,
+      soldTotal: product.soldTotal,
       bot: product.bot,
       createdAt: product.createdAt,
       updatedAt: product.updatedAt,
@@ -121,6 +127,10 @@ export class ProductsController {
       wholesalePrice: Number(product.wholesalePrice),
       stock: product.stock,
       isActive: product.isActive,
+      familySlug: product.familySlug,
+      familyLabel: product.familyLabel,
+      durationTag: product.durationTag,
+      soldTotal: product.soldTotal,
       bot: product.bot,
       updatedAt: product.updatedAt,
     };
