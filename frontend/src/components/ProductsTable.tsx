@@ -4,11 +4,12 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { ApiBot, ApiProductListItem } from "@/lib/types";
 import {
-  botDisplayName,
+  botLabel,
   formatPrice,
   formatRelativeTime,
   formatStock,
 } from "@/lib/format";
+import { BotIdentity } from "./BotIdentity";
 import { EmptyState } from "./EmptyState";
 import { StatusBadge } from "./StatusBadge";
 import styles from "./ProductsTable.module.css";
@@ -39,7 +40,8 @@ export function ProductsTable({ products, bots }: ProductsTableProps) {
         product.title.toLowerCase().includes(q) ||
         product.id.toLowerCase().includes(q) ||
         product.bot.name.toLowerCase().includes(q) ||
-        product.bot.username.toLowerCase().includes(q);
+        product.bot.username.toLowerCase().includes(q) ||
+        (product.bot.displayName?.toLowerCase().includes(q) ?? false);
       return matchesBot && matchesAvailability && matchesQuery;
     });
 
@@ -106,7 +108,7 @@ export function ProductsTable({ products, bots }: ProductsTableProps) {
               <option value="all">كل المصادر</option>
               {bots.map((bot) => (
                 <option key={bot.id} value={bot.id}>
-                  {botDisplayName(bot)}
+                  {botLabel(bot)}
                 </option>
               ))}
             </select>
@@ -200,12 +202,7 @@ export function ProductsTable({ products, bots }: ProductsTableProps) {
                       </span>
                     </td>
                     <td>
-                      <span className={styles.botName}>
-                        {botDisplayName(product.bot)}
-                      </span>
-                      <span className={`${styles.botUser} ltr`}>
-                        @{product.bot.username}
-                      </span>
+                      <BotIdentity bot={product.bot} />
                     </td>
                     <td className={styles.price}>
                       {formatPrice(product.price, product.currency)}
@@ -247,9 +244,7 @@ export function ProductsTable({ products, bots }: ProductsTableProps) {
                     >
                       {product.title}
                     </Link>
-                    <span className={`${styles.botUser} ltr`}>
-                      @{product.bot.username}
-                    </span>
+                    <BotIdentity bot={product.bot} compact className={styles.cardBot} />
                   </div>
                   <StatusBadge
                     kind={product.isActive ? "active" : "inactive"}
@@ -266,12 +261,6 @@ export function ProductsTable({ products, bots }: ProductsTableProps) {
                     <span className={styles.cardMetaLabel}>الكمية</span>
                     <span className={styles.cardMetaValue}>
                       {formatStock(product.stock)}
-                    </span>
-                  </div>
-                  <div>
-                    <span className={styles.cardMetaLabel}>المصدر</span>
-                    <span className={styles.cardMetaValue}>
-                      {botDisplayName(product.bot)}
                     </span>
                   </div>
                   <div>

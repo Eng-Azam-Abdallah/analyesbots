@@ -1,0 +1,53 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.inline {
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.name {
+  margin: 0;
+  font-weight: 600;
+  font-size: var(--text-sm);
+  color: var(--brand-ink);
+  overflow-wrap: anywhere;
+}
+
+.prominent .name {
+  font-size: var(--text-card);
+  font-weight: 700;
+}
+
+.compact .name {
+  font-size: var(--text-xs);
+}
+
+.username {
+  margin: 0;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--brand-muted);
+  text-decoration: none;
+  width: fit-content;
+}
+
+.username:hover {
+  color: var(--brand-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.usernamePlain {
+  margin: 0;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--brand-muted);
+}

@@ -102,6 +102,10 @@
   color: var(--brand-muted);
 }
 
+.cardBot {
+  margin-top: 6px;
+}
+
 .price,
 .stock,
 .time {

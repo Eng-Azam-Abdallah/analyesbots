@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ApiErrorState } from "@/components/ApiErrorState";
+import { BotIdentity } from "@/components/BotIdentity";
 import { PageHeader } from "@/components/PageHeader";
 import { ProductHistoryPanel } from "@/components/ProductHistory";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -56,7 +57,9 @@ export default async function ProductDetailPage({
         />
 
         <div className={styles.metaRow}>
-          <span className={`${styles.chip} ltr`}>@{product.bot.username}</span>
+          <span className={styles.botChip}>
+            <BotIdentity bot={product.bot} layout="inline" />
+          </span>
           <span className={`${styles.chip} ltr`}>{product.externalKey}</span>
           <StatusBadge kind={product.isActive ? "active" : "inactive"} />
         </div>

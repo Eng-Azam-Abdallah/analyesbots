@@ -5,7 +5,7 @@ import { ChangesList } from "@/components/ChangesList";
 import { PageHeader } from "@/components/PageHeader";
 import type { ApiChange, MarketChangeKind } from "@/lib/types";
 import { CHANGE_FILTERS } from "@/lib/labels";
-import { botDisplayName } from "@/lib/format";
+import { botLabel } from "@/lib/format";
 import styles from "./page.module.css";
 
 type ChangesClientProps = {
@@ -20,10 +20,7 @@ export function ChangesClient({ items }: ChangesClientProps) {
   const sources = useMemo(() => {
     const map = new Map<string, string>();
     for (const item of items) {
-      map.set(
-        item.product.bot.username,
-        botDisplayName(item.product.bot),
-      );
+      map.set(item.product.bot.username, botLabel(item.product.bot));
     }
     return Array.from(map.entries());
   }, [items]);
@@ -34,10 +31,12 @@ export function ChangesClient({ items }: ChangesClientProps) {
       const matchesKind = kind === "all" || item.kind === kind;
       const matchesSource =
         source === "all" || item.product.bot.username === source;
+      const label = botLabel(item.product.bot).toLowerCase();
       const matchesQuery =
         !q ||
         item.product.title.toLowerCase().includes(q) ||
-        item.product.bot.username.toLowerCase().includes(q);
+        item.product.bot.username.toLowerCase().includes(q) ||
+        label.includes(q);
       return matchesKind && matchesSource && matchesQuery;
     });
   }, [items, kind, query, source]);
@@ -78,7 +77,7 @@ export function ChangesClient({ items }: ChangesClientProps) {
               <option value="all">كل المصادر</option>
               {sources.map(([username, label]) => (
                 <option key={username} value={username}>
-                  {label} (@{username})
+                  {label}
                 </option>
               ))}
             </select>

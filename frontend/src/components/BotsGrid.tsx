@@ -1,12 +1,12 @@
 import type { ApiBot, ApiSyncRun } from "@/lib/types";
 import {
-  botDisplayName,
   formatDurationMs,
   formatExactTime,
   formatRelativeTime,
   minutesSince,
   sourceLabel,
 } from "@/lib/format";
+import { BotIdentity } from "./BotIdentity";
 import { EmptyState } from "./EmptyState";
 import { StatusBadge } from "./StatusBadge";
 import styles from "./BotsGrid.module.css";
@@ -68,8 +68,7 @@ export function BotsGrid({ bots, runs = [] }: BotsGridProps) {
           return (
             <li key={bot.id} className={styles.row}>
               <div className={styles.main}>
-                <p className={styles.name}>{botDisplayName(bot)}</p>
-                <p className={`${styles.username} ltr`}>@{bot.username}</p>
+                <BotIdentity bot={bot} prominent />
                 <span className={styles.sourceType}>
                   {sourceLabel(bot.sourceType)}
                 </span>
@@ -150,6 +149,8 @@ function sanitizeError(message: string): string {
     .replace(/rsk_live_[a-z0-9]+/gi, "[redacted]")
     .replace(/mk_[a-z0-9_]+/gi, "[redacted]")
     .replace(/tgb_[a-z0-9]+/gi, "[redacted]")
+    .replace(/qamify_[a-z0-9]+/gi, "[redacted]")
+    .replace(/tsb_live_[a-zA-Z0-9_]+/gi, "[redacted]")
     .replace(/Bearer\s+[^\s]+/gi, "Bearer [redacted]")
     .slice(0, 500);
 }

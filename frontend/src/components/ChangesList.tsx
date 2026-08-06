@@ -8,6 +8,7 @@ import {
   formatStock,
 } from "@/lib/format";
 import { isStockKind } from "@/lib/labels";
+import { BotIdentity } from "./BotIdentity";
 import { EmptyState } from "./EmptyState";
 import { StatusBadge } from "./StatusBadge";
 import styles from "./ChangesList.module.css";
@@ -153,7 +154,9 @@ export function ChangesList({ items, variant = "feed" }: ChangesListProps) {
                         {item.product.title}
                       </Link>
                     </td>
-                    <td className="ltr">@{item.product.bot.username}</td>
+                    <td>
+                      <BotIdentity bot={item.product.bot} compact />
+                    </td>
                     <td>
                       <StatusBadge kind={item.kind} />
                     </td>
@@ -211,8 +214,8 @@ function FeedList({ items }: { items: ApiChange[] }) {
                   {item.product.title}
                 </Link>
               </p>
-              <p className={`${styles.meta} ltr`}>
-                @{item.product.bot.username}
+              <p className={styles.meta}>
+                <BotIdentity bot={item.product.bot} compact layout="inline" />
               </p>
             </div>
           </div>

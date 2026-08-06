@@ -3,6 +3,7 @@ import { Cron } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
 import { CanbosoSyncService } from '../canboso/canboso-sync.service';
 import { HyperVinSyncService } from '../hypervin/hypervin-sync.service';
+import { QamifySyncService } from '../qamify/qamify-sync.service';
 import { ResellerSyncService } from '../reseller/reseller-sync.service';
 import { ShopDigitalSyncService } from '../shopdigital/shopdigital-sync.service';
 import { TechnySoftSyncService } from '../technysoft/technysoft-sync.service';
@@ -24,6 +25,7 @@ export class SyncOrchestrator implements OnModuleInit {
     private readonly hypervin: HyperVinSyncService,
     private readonly shopdigital: ShopDigitalSyncService,
     private readonly teleshopbot: TeleShopBotSyncService,
+    private readonly qamify: QamifySyncService,
     private readonly config: ConfigService,
   ) {}
 
@@ -66,6 +68,7 @@ export class SyncOrchestrator implements OnModuleInit {
         'TELESHOPBOT_API_KEY',
         () => this.teleshopbot.runSync(),
       ],
+      ['qamify', 'QAMIFY_API_KEY', () => this.qamify.runSync()],
     ];
 
     try {

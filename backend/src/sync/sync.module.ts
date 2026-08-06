@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { CanbosoModule } from '../canboso/canboso.module';
 import { HyperVinModule } from '../hypervin/hypervin.module';
+import { QamifyModule } from '../qamify/qamify.module';
 import { ResellerModule } from '../reseller/reseller.module';
 import { ShopDigitalModule } from '../shopdigital/shopdigital.module';
 import { TechnySoftModule } from '../technysoft/technysoft.module';
@@ -20,6 +21,7 @@ import { SyncOrchestratorController } from './sync-orchestrator.controller';
     HyperVinModule,
     ShopDigitalModule,
     TeleShopBotModule,
+    QamifyModule,
   ],
   providers: [SyncOrchestrator],
   controllers: [SyncOrchestratorController],

@@ -170,6 +170,8 @@ export function sourceLabel(sourceType: string): string {
       return "KOKORO SHOP";
     case "teleshopbot_api":
       return "TeleShopBot";
+    case "qamify_api":
+      return "Qamify";
     default:
       return sourceType;
   }
@@ -181,4 +183,25 @@ export function botDisplayName(bot: {
   username?: string;
 }): string {
   return bot.displayName || bot.name || bot.username || "مصدر غير معروف";
+}
+
+/** "اسم المتجر (@username)" — للفلاتر والقوائم المنسدلة */
+export function botLabel(bot: {
+  displayName?: string | null;
+  name?: string;
+  username?: string;
+}): string {
+  const name = botDisplayName(bot);
+  const username = bot.username?.replace(/^@/, "").trim();
+  if (!username) return name;
+  if (name.toLowerCase() === username.toLowerCase() || name === `@${username}`) {
+    return `@${username}`;
+  }
+  return `${name} (@${username})`;
+}
+
+export function telegramBotUrl(username?: string | null): string | null {
+  const handle = username?.replace(/^@/, "").trim();
+  if (!handle) return null;
+  return `https://t.me/${handle}`;
 }

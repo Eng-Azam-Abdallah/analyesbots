@@ -34,18 +34,6 @@
   min-width: 0;
 }
 
-.name {
-  margin: 0;
-  font-size: var(--text-card);
-  font-weight: 700;
-}
-
-.username {
-  margin: 4px 0 0;
-  font-size: var(--text-sm);
-  color: var(--brand-muted);
-}
-
 .sourceType {
   margin: 8px 0 0;
   display: inline-flex;
