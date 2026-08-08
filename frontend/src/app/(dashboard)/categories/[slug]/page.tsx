@@ -78,7 +78,7 @@ export default async function CategoryDetailPage({ params }: Props) {
                       </Link>
                     </td>
                     <td>
-                      <BotIdentity bot={product.bot} compact />
+                      <BotIdentity bot={product.bot} compact linkToStore />
                     </td>
                     <td className="tabular">
                       {formatPrice(product.price, product.currency)}

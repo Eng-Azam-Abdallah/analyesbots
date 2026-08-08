@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ApiBot, ApiSyncRun } from "@/lib/types";
 import {
   formatDurationMs,
@@ -88,6 +89,14 @@ export function BotsGrid({ bots, runs = [], dailyByBotId = {} }: BotsGridProps) 
                 <span className={styles.sourceType}>
                   {sourceLabel(bot.sourceType)}
                 </span>
+                <div className={styles.storeActions}>
+                  <Link
+                    className={styles.storeLink}
+                    href={`/bots/${encodeURIComponent(bot.username)}`}
+                  >
+                    عرض المتجر
+                  </Link>
+                </div>
               </div>
 
               <div className={styles.stats}>

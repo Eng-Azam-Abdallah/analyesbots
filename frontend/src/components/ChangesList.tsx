@@ -155,7 +155,7 @@ export function ChangesList({ items, variant = "feed" }: ChangesListProps) {
                       </Link>
                     </td>
                     <td>
-                      <BotIdentity bot={item.product.bot} compact />
+                      <BotIdentity bot={item.product.bot} compact linkToStore />
                     </td>
                     <td>
                       <StatusBadge kind={item.kind} />
@@ -215,7 +215,7 @@ function FeedList({ items }: { items: ApiChange[] }) {
                 </Link>
               </p>
               <p className={styles.meta}>
-                <BotIdentity bot={item.product.bot} compact layout="inline" />
+                <BotIdentity bot={item.product.bot} compact layout="inline" linkToStore />
               </p>
             </div>
           </div>

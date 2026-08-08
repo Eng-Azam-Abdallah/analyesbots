@@ -43,6 +43,7 @@ function pageTitle(pathname: string): string {
   if (pathname.startsWith("/categories")) return "الفئات";
   if (pathname.startsWith("/analytics")) return "التحليل";
   if (pathname.startsWith("/changes")) return "التغيّرات";
+  if (pathname.match(/^\/bots\/[^/]+/)) return "متجر التاجر";
   if (pathname.startsWith("/bots")) return "المصادر";
   return "لوحة السوق";
 }

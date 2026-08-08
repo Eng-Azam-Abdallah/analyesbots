@@ -45,6 +45,29 @@
   color: var(--brand-muted);
 }
 
+.storeActions {
+  margin-top: 10px;
+}
+
+.storeLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--brand-white);
+  color: var(--brand-ink);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.storeLink:hover {
+  border-color: var(--brand-primary, #ea580c);
+  color: var(--brand-primary, #ea580c);
+}
+
 .stats {
   display: grid;
   grid-template-columns: 1fr 1fr;

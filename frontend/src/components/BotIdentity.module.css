@@ -21,12 +21,29 @@
   overflow-wrap: anywhere;
 }
 
-.prominent .name {
+.nameLink {
+  margin: 0;
+  font-weight: 600;
+  font-size: var(--text-sm);
+  color: var(--brand-ink);
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+
+.nameLink:hover {
+  color: var(--brand-primary, #ea580c);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.prominent .name,
+.prominent .nameLink {
   font-size: var(--text-card);
   font-weight: 700;
 }
 
-.compact .name {
+.compact .name,
+.compact .nameLink {
   font-size: var(--text-xs);
 }
 

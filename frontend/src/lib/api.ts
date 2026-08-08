@@ -3,6 +3,7 @@ import type {
   ApiAnalyticsProductsTop,
   ApiAnalyticsRanking,
   ApiBot,
+  ApiBotStore,
   ApiChange,
   ApiFamilyDetail,
   ApiFamilySummary,
@@ -64,12 +65,14 @@ export function getMarketSummary(hours = 24) {
 export function getProducts(params?: {
   active?: boolean;
   botId?: string;
+  username?: string;
   family?: string;
 }) {
   const search = new URLSearchParams();
   if (params?.active === true) search.set("active", "true");
   if (params?.active === false) search.set("active", "false");
   if (params?.botId) search.set("botId", params.botId);
+  if (params?.username) search.set("username", params.username);
   if (params?.family) search.set("family", params.family);
   const query = search.toString();
   return apiFetch<ApiProductListItem[]>(
@@ -98,6 +101,16 @@ export function getChanges(params?: {
 
 export function getBots() {
   return apiFetch<ApiBot[]>("/bots");
+}
+
+export function getBotStore(username: string, active?: boolean) {
+  const search = new URLSearchParams();
+  if (active === true) search.set("active", "true");
+  if (active === false) search.set("active", "false");
+  const query = search.toString();
+  return apiFetch<ApiBotStore>(
+    `/bots/${encodeURIComponent(username.replace(/^@/, ""))}${query ? `?${query}` : ""}`,
+  );
 }
 
 export function getSyncRuns() {

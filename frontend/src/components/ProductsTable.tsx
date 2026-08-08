@@ -234,7 +234,7 @@ export function ProductsTable({
                       </span>
                     </td>
                     <td>
-                      <BotIdentity bot={product.bot} />
+                      <BotIdentity bot={product.bot} linkToStore />
                     </td>
                     <td className={styles.price}>
                       {formatPrice(product.price, product.currency)}
@@ -290,7 +290,7 @@ export function ProductsTable({
                     >
                       {product.title}
                     </Link>
-                    <BotIdentity bot={product.bot} compact className={styles.cardBot} />
+                    <BotIdentity bot={product.bot} compact linkToStore className={styles.cardBot} />
                   </div>
                   <StatusBadge
                     kind={

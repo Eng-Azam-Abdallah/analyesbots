@@ -10,11 +10,20 @@ export class ProductsController {
   @Get()
   async list(
     @Query('botId') botId?: string,
+    @Query('username') username?: string,
     @Query('active') active?: string,
     @Query('family') family?: string,
   ) {
     const where: Prisma.ProductWhereInput = {};
     if (botId) where.botId = botId;
+    if (username) {
+      where.bot = {
+        username: {
+          equals: decodeURIComponent(username).replace(/^@/, '').trim(),
+          mode: 'insensitive',
+        },
+      };
+    }
     if (active === 'true') where.isActive = true;
     if (active === 'false') where.isActive = false;
     if (family) where.familySlug = family;

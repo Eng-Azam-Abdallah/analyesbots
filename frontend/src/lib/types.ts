@@ -15,6 +15,66 @@ export type ApiBot = {
   lastSyncedAt: string | null;
   productCount: number;
   createdAt: string;
+  priceStale?: boolean;
+};
+
+export type ApiBotStoreProduct = {
+  id: string;
+  title: string;
+  currency: string;
+  price: number;
+  wholesalePrice: number;
+  offerPrice: number | null;
+  stock: number;
+  isActive: boolean;
+  priceStale?: boolean;
+  familySlug: string | null;
+  familyLabel: string | null;
+  durationTag: string | null;
+  soldTotal: number | null;
+  updatedAt: string;
+  priceChanged24h: boolean;
+  priceChangeKind: "up" | "down" | null;
+};
+
+export type ApiBotStore = {
+  id: string;
+  name: string;
+  username: string;
+  displayName: string | null;
+  sourceType: string;
+  lastSyncedAt: string | null;
+  createdAt: string;
+  priceStale: boolean;
+  counts: {
+    total: number;
+    active: number;
+    inactive: number;
+  };
+  summary: {
+    minPrice: number | null;
+    maxPrice: number | null;
+    maxStock: number | null;
+    totalStock: number | null;
+    familyCount: number;
+    priceChanges24h: number;
+  };
+  families: Array<{ slug: string; label: string }>;
+  balance: {
+    balance: number;
+    currency: string;
+    capturedAt: string;
+  } | null;
+  lastRun: {
+    id: string;
+    status: string;
+    productsSeen: number;
+    changesDetected: number;
+    errorMessage: string | null;
+    startedAt: string;
+    finishedAt: string | null;
+  } | null;
+  products: ApiBotStoreProduct[];
 };
 
 export type ApiProductListItem = {

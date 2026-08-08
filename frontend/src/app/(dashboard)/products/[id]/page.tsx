@@ -58,7 +58,7 @@ export default async function ProductDetailPage({
 
         <div className={styles.metaRow}>
           <span className={styles.botChip}>
-            <BotIdentity bot={product.bot} layout="inline" />
+            <BotIdentity bot={product.bot} layout="inline" linkToStore />
           </span>
           <span className={`${styles.chip} ltr`}>{product.externalKey}</span>
           <StatusBadge kind={product.isActive ? "active" : "inactive"} />

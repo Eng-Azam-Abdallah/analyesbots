@@ -253,6 +253,7 @@ analyes/
 | 19 | إضافة مصدر TeleShopBot Gemini | تم | مزامنة ناجحة عبر `X-API-Key` بدون orders |
 | 20 | مصادر إضافية (Qamify / InsightX / Ai-Market / Vexoran / EM Store) | تم | موديولات sync + هوية البوت في الواجهة |
 | 21 | ذكاء السوق — فئات + مبيعات مستنتجة/معلنة | تم | انظر [`MARKET_INTELLIGENCE.md`](./MARKET_INTELLIGENCE.md) |
+| 22 | صفحة متجر التاجر `/bots/[username]` | تم | كتالوج كامل لكل مصدر مع ملخص أسعار ومخزون |
 
 ---
 
