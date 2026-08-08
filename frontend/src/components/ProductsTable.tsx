@@ -31,7 +31,7 @@ export function ProductsTable({
   const [query, setQuery] = useState("");
   const [botId, setBotId] = useState("all");
   const [family, setFamily] = useState("all");
-  const [availability, setAvailability] = useState<Availability>("all");
+  const [availability, setAvailability] = useState<Availability>("active");
   const [sort, setSort] = useState<SortKey>("updated");
 
   const filtered = useMemo(() => {
@@ -218,7 +218,10 @@ export function ProductsTable({
               </thead>
               <tbody>
                 {filtered.map((product) => (
-                  <tr key={product.id}>
+                  <tr
+                    key={product.id}
+                    className={product.priceStale ? styles.staleRow : undefined}
+                  >
                     <td>
                       <Link
                         href={`/products/${product.id}`}
@@ -244,6 +247,11 @@ export function ProductsTable({
                           )}
                         </span>
                       ) : null}
+                      {product.priceStale ? (
+                        <span className={styles.staleHint}>
+                          غير مؤكد — المزامنة متوقفة
+                        </span>
+                      ) : null}
                     </td>
                     <td className={styles.stock}>
                       {formatStock(product.stock)}
@@ -253,7 +261,13 @@ export function ProductsTable({
                     </td>
                     <td>
                       <StatusBadge
-                        kind={product.isActive ? "active" : "inactive"}
+                        kind={
+                          product.priceStale
+                            ? "stale"
+                            : product.isActive
+                              ? "active"
+                              : "inactive"
+                        }
                       />
                     </td>
                   </tr>
@@ -264,7 +278,10 @@ export function ProductsTable({
 
           <div className={styles.cards}>
             {filtered.map((product) => (
-              <article key={product.id} className={styles.card}>
+              <article
+                key={product.id}
+                className={`${styles.card} ${product.priceStale ? styles.staleRow : ""}`}
+              >
                 <div className={styles.cardTop}>
                   <div>
                     <Link
@@ -276,7 +293,13 @@ export function ProductsTable({
                     <BotIdentity bot={product.bot} compact className={styles.cardBot} />
                   </div>
                   <StatusBadge
-                    kind={product.isActive ? "active" : "inactive"}
+                    kind={
+                      product.priceStale
+                        ? "stale"
+                        : product.isActive
+                          ? "active"
+                          : "inactive"
+                    }
                   />
                 </div>
                 <div className={styles.cardMeta}>
@@ -285,6 +308,9 @@ export function ProductsTable({
                     <span className={styles.cardMetaValue}>
                       {formatPrice(product.price, product.currency)}
                     </span>
+                    {product.priceStale ? (
+                      <span className={styles.staleHint}>غير مؤكد</span>
+                    ) : null}
                   </div>
                   <div>
                     <span className={styles.cardMetaLabel}>الكمية</span>

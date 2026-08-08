@@ -1,6 +1,7 @@
 import { Controller, Get, NotFoundException, Param, Query } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { isPriceStale } from '../sync/stale-catalog';
 
 @Controller('products')
 export class ProductsController {
@@ -23,7 +24,13 @@ export class ProductsController {
       orderBy: [{ isActive: 'desc' }, { title: 'asc' }],
       include: {
         bot: {
-          select: { id: true, username: true, displayName: true, name: true },
+          select: {
+            id: true,
+            username: true,
+            displayName: true,
+            name: true,
+            lastSyncedAt: true,
+          },
         },
       },
     });
@@ -114,11 +121,13 @@ export class ProductsController {
             username: true;
             displayName: true;
             name: true;
+            lastSyncedAt: true;
           };
         };
       };
     }>,
   ) {
+    const priceStale = isPriceStale(product.bot.lastSyncedAt);
     return {
       id: product.id,
       title: product.title,
@@ -127,11 +136,18 @@ export class ProductsController {
       wholesalePrice: Number(product.wholesalePrice),
       stock: product.stock,
       isActive: product.isActive,
+      priceStale,
       familySlug: product.familySlug,
       familyLabel: product.familyLabel,
       durationTag: product.durationTag,
       soldTotal: product.soldTotal,
-      bot: product.bot,
+      bot: {
+        id: product.bot.id,
+        username: product.bot.username,
+        displayName: product.bot.displayName,
+        name: product.bot.name,
+        lastSyncedAt: product.bot.lastSyncedAt,
+      },
       updatedAt: product.updatedAt,
     };
   }

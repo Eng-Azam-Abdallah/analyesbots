@@ -25,6 +25,7 @@ export type ApiProductListItem = {
   wholesalePrice: number;
   stock: number;
   isActive: boolean;
+  priceStale?: boolean;
   familySlug?: string | null;
   familyLabel?: string | null;
   durationTag?: string | null;
@@ -34,6 +35,7 @@ export type ApiProductListItem = {
     username: string;
     displayName: string | null;
     name: string;
+    lastSyncedAt?: string | null;
   };
   updatedAt: string;
 };

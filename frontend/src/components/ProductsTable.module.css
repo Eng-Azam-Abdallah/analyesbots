@@ -163,6 +163,18 @@
   font-variant-numeric: tabular-nums;
 }
 
+.staleRow {
+  opacity: 0.72;
+}
+
+.staleHint {
+  display: block;
+  margin-top: 4px;
+  font-size: var(--text-label);
+  font-weight: 700;
+  color: var(--warn, #a16207);
+}
+
 @media (max-width: 899px) {
   .tableWrap {
     display: none;

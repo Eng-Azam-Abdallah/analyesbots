@@ -39,6 +39,9 @@ export class ZoomStooreApiClient {
           'X-API-Key': this.apiKey,
           Accept: 'application/json',
           'Content-Type': 'application/json',
+          // Cloudflare on ZoomStoore blocks default undici signatures (1010).
+          'User-Agent':
+            'Mozilla/5.0 (compatible; AnalyesMonitor/1.0; +https://github.com/Eng-Azam-Abdallah/analyesbots)',
           ...(init?.headers ?? {}),
         },
       });

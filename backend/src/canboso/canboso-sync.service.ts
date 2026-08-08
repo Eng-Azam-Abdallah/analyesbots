@@ -68,9 +68,18 @@ export class CanbosoSyncService {
         }),
       ]);
 
-      const remoteProducts = this.extractProducts(productsResponse).map((p) =>
-        this.normalizeProduct(p),
-      );
+      const remoteProducts: NormalizedCanbosoProduct[] = [];
+      for (const raw of this.extractProducts(productsResponse)) {
+        try {
+          remoteProducts.push(this.normalizeProduct(raw));
+        } catch (error) {
+          this.logger.warn(
+            `Skipping Canboso product: ${
+              error instanceof Error ? error.message : String(error)
+            }`,
+          );
+        }
+      }
       productsSeen = remoteProducts.length;
 
       const balanceValue = this.extractBalance(balanceResponse);

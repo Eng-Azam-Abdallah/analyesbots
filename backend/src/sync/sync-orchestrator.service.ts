@@ -6,6 +6,7 @@ import { CanbosoSyncService } from '../canboso/canboso-sync.service';
 import { EmStoreSyncService } from '../emstore/emstore-sync.service';
 import { HyperVinSyncService } from '../hypervin/hypervin-sync.service';
 import { InsightXSyncService } from '../insightx/insightx-sync.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { QamifySyncService } from '../qamify/qamify-sync.service';
 import { ResellerSyncService } from '../reseller/reseller-sync.service';
 import { ShopDigitalSyncService } from '../shopdigital/shopdigital-sync.service';
@@ -14,6 +15,7 @@ import { TeleShopBotSyncService } from '../teleshopbot/teleshopbot-sync.service'
 import { TelegramBuyerSyncService } from '../telegrambuyer/telegrambuyer-sync.service';
 import { VexoranSyncService } from '../vexoran/vexoran-sync.service';
 import { ZoomStooreSyncService } from '../zoomstoore/zoomstoore-sync.service';
+import { deactivateStaleBotCatalogs } from './stale-catalog';
 
 @Injectable()
 export class SyncOrchestrator implements OnModuleInit {
@@ -35,6 +37,7 @@ export class SyncOrchestrator implements OnModuleInit {
     private readonly vexoran: VexoranSyncService,
     private readonly emstore: EmStoreSyncService,
     private readonly config: ConfigService,
+    private readonly prisma: PrismaService,
   ) {}
 
   async onModuleInit() {
@@ -98,6 +101,11 @@ export class SyncOrchestrator implements OnModuleInit {
             }`,
           );
         }
+      }
+
+      const stale = await deactivateStaleBotCatalogs(this.prisma, this.logger);
+      if (stale.products > 0) {
+        results.staleDeactivated = stale;
       }
 
       return { skipped: false as const, results };
